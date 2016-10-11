@@ -5,7 +5,7 @@
 #' @param append Should we append the output to the original data file.  Default is FALSE.
 #' @param diagcode test
 #' @param proccode test
-#' @param
+#'
 #'
 #' @return The sum of \code{x} and \code{y}
 #' @examples
