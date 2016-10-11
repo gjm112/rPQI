@@ -23,7 +23,7 @@ computePQI <- function(data = data, pqi = c(1,3,5), append = FALSE, diagcode = "
   paste0(diagcode,1:10)
   #procedure codes
   paste0(proccode,1:10)
-
+  #Olivia
 
   ##########
   #PQI1
