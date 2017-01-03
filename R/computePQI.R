@@ -1,12 +1,13 @@
 #' 
 #'
-#' @param data the inpute data with diagnosis and procedure codes, object of class data.frame
-#' @param pqi Which PQI's to calculate
-#' @param append Should we append the output to the original data file.  Default is FALSE.
-#' @param diagcode Character string matching: 'dx', 'dr' 
-#' @param proccode Character string matching: 'px', 'pr'
+#' @param data the inpute data with diagnosis and procedure codes, object of class data.frame.
+#' @param pqi numeric vector indication which PQI's to calculate.
+#' @param append logical. Should the output be appended to the original data file?  Default is FALSE.
+#' @param diagcode Character string matching: 'dx' or 'dr'. Default is 'dx'. 
+#' @param proccode Character string matching: 'px' or 'pr'. Default is 'px'.
 #' @param agevar Character string identifying column name of the age variable (not yet included)
-#'
+#' @param idvar character string identifying column name of the patient ID variable.
+#' @param version PQI update version. Currently, only version 6.0 is supported. 
 #' 
 #' 
 #' 
@@ -16,13 +17,29 @@
 
 #document(pkg="/Users/gregorymatthews/Dropbox/rPQI")
 
-computePQI <- function(data = data, pqi = c(1:3,5,7:12,14:16,90:93), append = FALSE, diagcode = "dx", proccode = "px", agevar = "age", version = "6.0"){
+computePQI <- function(data = data, pqi = c(1:3,5,7:12,14:16,90:93),
+                       append = FALSE, diagcode = "dx", proccode = "px",
+                       agevar = "age", idvar = "id", version = "6.0"){
 
   data <- as.data.frame(data)
-  #rename variables to dx and px.
-  # code.name <- colnames(data)
-  #if (code == "dx") {
-  #}
+  id.col <- grep(idvar, colnames(data))
+  ID <- data[,id.col]
+  #age.col <- grep(agevar, colnames(data))
+  #age <- data[,age.col]
+  
+  #Changing colnames to dx/px
+  orig.col <- colnames(data)
+  if (diagcode == "dr" & proccode == "pr"){
+    newcols <- sub("r", "x", orig.col)
+    newcols -> colnames(data)
+  } else if(diagcode=="dr") {
+    dx.col <- sub("dr", "dx", orig.col)
+    dx.col -> colnames(data)
+  } else if(proccode =="pr") {
+    px.col <- sub("pr", "px", orig.col)
+    px.col -> colnames(data)
+  }
+  
   
   ################################################
   #PQI 01 : Diabetes Short Term 
@@ -495,12 +512,25 @@ computePQI <- function(data = data, pqi = c(1:3,5,7:12,14:16,90:93), append = FA
   PQI.fin <- cbind(PQI.01, PQI.02, PQI.03, PQI.05, PQI.07, PQI.08, PQI.09, 
                    PQI.10, PQI.11, PQI.12, PQI.14, PQI.15, PQI.16, PQI.90, 
                    PQI.91, PQI.92, PQI.93)
-  ID <- data$id
+  
+  #Identifying which PQIs to print
+  if (is.null(pqi)==TRUE) {
+    PQI.print <- PQI.fin
+  } else {
+    single.dig <- c(1,2,3,5,7,8,9)
+    matches <- unique(grep(paste0(pqi,"$", collapse="|"), #adding 0 to single digit PQIs to facilitate matching
+                           single.dig, value=T))
+    pqi.single <- paste0("0", matches)
+    pqi.remain <- as.character(pqi[!pqi %in% matches])
+    pqi.full <- c(pqi.single, pqi.remain)
+    pqi.match <- unique(grep(paste0(pqi.full,"$", collapse="|"),
+                             pqi.name, value=T))
+    PQI.print <- PQI.fin[, pqi.match]
+  }
   
   if (append == TRUE) {
-    return(as.data.frame(cbind(data, PQI.fin)))
-  } else (return(as.data.frame(cbind(ID, PQI.fin))))
-
-  ##return only selected PQIs
+    orig.col -> colnames(data) #including original colnames
+    return(as.data.frame(cbind(data, PQI.print)))
+  } else (return(as.data.frame(cbind(ID, PQI.print))))
 
 }
