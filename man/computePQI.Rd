@@ -2,32 +2,31 @@
 % Please edit documentation in R/computePQI.R
 \name{computePQI}
 \alias{computePQI}
-\title{Add together two numbers}
+\title{PQI}
 \usage{
-computePQI(data = data, pqi = c(1, 3, 5), append = FALSE,
-  diagcode = "dx", proccode = "px", agevar = "age", version = "5.0")
+computePQI(data = data, pqi = c(1:3, 5, 7:12, 14:16, 90:93),
+  append = FALSE, diagcode = "dx", proccode = "px", agevar = "age",
+  idvar = "id", mdcvar = "mdc", version = "6.0", ICD = "9")
 }
 \arguments{
-\item{data}{the inpute data with diagnosis and procedure codes}
+\item{data}{the input data with diagnosis and procedure codes, object of class data.frame.}
 
-\item{pqi}{Which PQI's to calculate}
+\item{append}{logical. Should the output be appended to the original data file?  Default is FALSE.}
 
-\item{append}{Should we append the output to the original data file.  Default is FALSE.}
+\item{diagcode}{Character string matching: 'dx' or 'dr'. Default is 'dx'.}
 
-\item{diagcode}{test}
+\item{proccode}{Character string matching: 'px' or 'pr'. Default is 'px'.}
 
-\item{proccode}{test}
-}
-\value{
-The sum of \code{x} and \code{y}
-}
-\description{
-Add together two numbers
-}
-\examples{
-add(1, 1)
-add(10, 1)
+\item{agevar}{Character string identifying column name of the age variable.}
 
+\item{idvar}{Character string identifying column name of the patient ID variable.}
 
+\item{mdcvar}{Character string identifying column name of the MDC variable.}
+
+\item{version}{PQI update version. Currently, only version 6.0 is supported.}
+
+\item{ICD}{Character string matching: '9' or '10' to specify the ICD-CM version.}
+
+\item{PQI}{numeric vector indicates which PQI's to calculate.}
 }
 
